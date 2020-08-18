@@ -1,0 +1,385 @@
+#include<iostream>
+#include<fstream>
+#include<iomanip>
+#include<stdlib.h>
+
+using namespace std;
+
+class Student
+{
+	
+	int courseid;
+
+   char coursetitle[20];
+ 
+   char coursecode[20];
+   
+   char firstname[20];
+ 
+   char lastname[20];
+   
+   char intname[20];//instructor name
+   
+   int smstr;
+ 
+   char phoneno[30];
+ 
+   char email[50];
+   
+   char section[20];
+  
+   char dscr[100];
+ 
+ public:
+   
+    void getData();
+   
+    void showData();
+   
+    int getcourseid() 
+
+	           {return courseid;}
+}s;
+
+void Student::getData()
+{
+ cout<<"\n\nEnter Student Details......\n";
+
+    
+	cout<<"enter the course id: "; cin>>courseid;
+ 
+    cout<<"Enter First Name         : "; cin.ignore(); cin.getline(firstname,20);
+ 
+    cout<<"Enter last Name         : "; cin.ignore(); cin.getline(lastname,20);
+ 
+    cout<<"Enter intname Name         : "; cin.ignore(); cin.getline(intname,30);
+
+    cout<<"Enter your phone nomber         : "; cin.ignore(); cin.getline(phoneno,30);
+
+    cout<<"Enter  your email address         : "; cin.ignore(); cin.getline(email,50);
+
+    cout<<"Enter your smester         : "; cin>>smstr;
+
+    cout<<"Enter your section         : "; cin.ignore(); cin.getline(section,20);
+
+    cout<<"Enter course code          : "; cin.ignore(); cin.getline(coursecode,20);
+
+    cout<<"Enter the course title which you want to drop.     : "; cin.ignore(); cin.getline(coursetitle,20);
+ 
+    cout<<"Write the discription about the couse          : "; cin.ignore(); cin.getline(dscr,100);
+    
+	cout<<endl;
+
+ 
+}
+
+void Student::showData()
+{
+ 
+    cout<<"\n\n.......Student Details......\n";
+ 
+    cout<<"course title                     : "<<coursetitle[20]<<endl;
+ 
+    cout<<"first Name                       : "<<firstname<<endl;
+ 
+    cout<<"Last name                        : "<<lastname<<endl;
+ 
+    cout<<"Instrutor  name                  : "<<intname<<endl;
+ 
+    cout<<"Semster                         : "<<smstr<<endl;
+ 
+    cout<<"section                          : "<<section<<endl;
+ 
+    cout<<"course you want to drop          : "<<coursetitle<<endl;
+ 
+    cout<<"couse code                       : "<<coursecode[20]<<endl;
+ 
+    cout<<"email address                   :          "<<email[50]<<endl;
+ 
+    cout<<"phone number                     : "<<phoneno<<endl;
+ 
+    cout<<"the discription of the couse     : "<<dscr[100]<<endl;
+ 
+    cout<<endl;
+}
+
+void addData()
+{
+ 
+ ofstream fout;
+ 
+ fout.open("Students.dat",ios::binary|ios::out|ios::app);
+ 
+ s.getData();
+ 
+ fout.write((char*)&s,sizeof(s));
+ 
+ fout.close();
+ 
+ cout<<"\n\nData Successfully Saved to File....\n";
+ 
+}
+
+void displayData()
+
+{
+	
+ ifstream fin;
+
+ fin.open("Students.dat",ios::in|ios::binary);
+
+ while(fin.read((char*)&s,sizeof(s)))
+
+ {
+
+  s.showData();
+
+ }
+
+ fin.close();
+
+ cout<<"\n\nData Reading from File Successfully Done....\n";
+
+}
+
+
+void searchData()
+
+{
+
+ int n, flag=0;
+
+ ifstream fin;
+
+ fin.open("Students.dat",ios::in|ios::binary);
+
+ cout<<"Enter course number you want to search : ";
+
+ cin>>n;
+ 
+ while(fin.read((char*)&s,sizeof(s)))
+
+ {
+
+  if(n==s.getcourseid())
+
+  {
+
+   cout<<"The Details of course No. "<<n<<" shown herewith:\n";
+
+   s.showData();
+
+   flag++;
+
+  }
+
+ }
+
+ fin.close();
+
+ if(flag==0)
+
+  cout<<"The course No. "<<n<<" not found....\n\n";
+
+ cout<<"\n\nData Reading from File Successfully Done....\n";
+
+}
+
+void deleteData()
+
+{
+
+ int n, flag=0;
+
+ ifstream fin;
+
+ ofstream fout,tout;
+
+ fin.open("Students.dat",ios::in|ios::binary);
+
+ fout.open("TempStud.dat",ios::out|ios::app|ios::binary);
+
+ tout.open("TrashStud.dat",ios::out|ios::app|ios::binary);
+
+ cout<<"Enter course Number you want to move to Trash : ";
+
+ cin>>n;
+ 
+ while(fin.read((char*)&s,sizeof(s)))
+
+ {
+
+  if(n==s.getcourseid())
+
+  {
+
+   cout<<"The Following course id. "<<n<<" has been moved to Trash:\n";
+
+   s.showData();
+
+   tout.write((char*)&s,sizeof(s));
+
+   flag++;
+
+  }
+
+  else
+
+  {
+
+   fout.write((char*)&s,sizeof(s));
+
+  }
+
+ }
+
+ fout.close();
+
+ tout.close();
+
+
+ fin.close();
+
+ if(flag==0)
+
+  cout<<"The course No. "<<n<<" not found....\n\n";
+
+ remove("Students.dat");
+
+ rename("tempStud.dat","Students.dat");
+
+}
+
+void getTrash()
+{
+ 
+ ifstream fin;
+ 
+ fin.open("TrashStud.dat",ios::in|ios::binary);
+ 
+ while(fin.read((char*)&s,sizeof(s)))
+ 
+ {
+ 
+  s.showData();
+ 
+ }
+ 
+ fin.close();
+ 
+ cout<<"\n\nData Reading from Trash File Successfully Done....\n";
+}
+
+void modifyData()
+{
+ 
+ int n, flag=0, pos;
+ 
+ fstream fio;
+ 
+ fio.open("Students.dat",ios::in|ios::out|ios::binary);
+ 
+ cout<<"Enter course Number you want to Modify : ";
+
+ cin>>n; 
+ 
+ while(fio.read((char*)&s,sizeof(s)))
+ 
+ {
+ 
+  pos=fio.tellg();
+ 
+  if(n==s.getcourseid())
+ 
+  {
+ 
+   cout<<"The Following course No. "<<n<<" will be modified with new data:\n";
+ 
+   s.showData();
+ 
+   cout<<"\n\nNow Enter the New Details....\n";
+ 
+   s.getData();
+ 
+   fio.seekg(pos-sizeof(s));
+ 
+   fio.write((char*)&s,sizeof(s));
+ 
+   flag++;
+ 
+  }
+ 
+ }
+ 
+ fio.close();
+
+ if(flag==0)
+
+
+  cout<<"The course No. "<<n<<" not found....\n\n";
+}
+
+   void drop()
+   
+   {
+ 
+ int ch;
+ 
+ do
+ {
+ 
+  system("cls");
+ 
+  cout<<"...............STUDENT COURSE DROP REQUEST FORM..............\n";
+ 
+  cout<<"======================================================\n";
+ 
+  cout<<"0. Exit from Program\n";
+ 
+  cout<<"1. Write Data to File\n";
+ 
+  cout<<"2. Read Data From File\n";
+ 
+  cout<<"3. Search Data From File\n";
+ 
+  cout<<"4. Delete Data From File\n";
+ 
+  cout<<"5. Get Deleted Records from Trash file\n";
+ 
+  cout<<"6. Modify Data in File\n";
+ 
+  cout<<"Enter your choice  : ";
+ 
+  cin>>ch;
+ 
+  system("cls");
+ 
+  switch(ch)
+ 
+  {
+ 
+   case 1: addData(); break;
+ 
+   case 2: displayData(); break;
+ 
+   case 3: searchData(); break;
+ 
+   case 4: deleteData(); break;
+ 
+   case 5: getTrash(); break;
+ 
+   case 6: modifyData(); break;
+ 
+  }
+ 
+  system("pause");
+ 
+ }while(ch);
+}
+
+
+
+int main()
+{
+ drop();
+}
